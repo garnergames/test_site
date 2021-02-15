@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three/three.module.js';
-import { OrbitControls } from '../../libs/three/jsm/OrbitControls.js';
+import * as THREE from './libs/three/three.module.js';
+import { OrbitControls } from './libs/three/jsm/OrbitControls.js';
 
 class App{
 	constructor(){
@@ -25,8 +25,35 @@ class App{
 		container.appendChild( this.renderer.domElement );
 		
         //Replace Box with Circle, Cone, Cylinder, Dodecahedron, Icosahedron, Octahedron, Plane, Sphere, Tetrahedron, Torus or TorusKnot
-        const geometry = new THREE.BoxBufferGeometry(); 
+        //const geometry = new THREE.BoxBufferGeometry(); 
         
+
+        const shape = new THREE.Shape();
+        const outerRadius = 0.8;
+        const innerRadius = 0.4;
+        const PI2 = Math.PI*2;
+        const inc = PI2/10;
+
+        shape.moveTo(outerRadius, 0);
+        let inner = true;
+
+        for (let theta = inc; theta<PI2; theta+=inc)
+        {
+            const radius = (inner) ? innerRadius : outerRadius;
+            shape.lineTo( Math.cos(theta)*radius, Math.sin(theta)*radius);
+            inner = !inner;        
+        }
+
+        const extrudeSettings = {
+            steps:1, 
+            depth:1,
+            bevelEnabled: false
+        }
+
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+
+
         const material = new THREE.MeshStandardMaterial( { color: 0xFF0000 });
 
         this.mesh = new THREE.Mesh( geometry, material );
